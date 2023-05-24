@@ -45,25 +45,15 @@ while($DoneEnteringGroups -eq 0) {
 Clear-Host
 Write-Host "$($allgroups.Count) groups found among $($users_groups.Count) user accounts.`n" -ForegroundColor green
 
-# Create an empty array to store the formatted output
-$output = @()
-
 Foreach ($user in $users_groups.GetEnumerator() ) {
-    $username = $user.Name
-    $usergroups = $user.Value | Where-Object {$allgroups -notcontains $_}
-
-    # Create a custom object with properties for username and groups
-    $result = [PSCustomObject]@{
-        Username = $username
-        Groups = $usergroups -join ', '
+    Write-Host "---- $($user.Name) does not have the following groups:" -ForegroundColor Yellow
+    Foreach ($group in $allgroups) {
+        if (!($user.Value -contains $group)) {
+            Write-Host $group
+            }
     }
-
-    # Add the custom object to the output array
-    $output += $result
+    Write-Host "`n"
 }
-
-# Display the formatted output with columns
-$output | Format-Table -AutoSize -Property Username, Groups
 
 $ExportQuestion = Read-Host "Enter 'E' to export results to file or ENTER to quit"
 
